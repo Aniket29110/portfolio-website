@@ -1,0 +1,18 @@
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+@import "tailwindcss";
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: radial-gradient(
+    circle at top,
+    #3b0764 0%,
+    #020617 45%,
+    #020617 100%
+  );
+  color: white;
+  font-family: "Inter", sans-serif;
+}

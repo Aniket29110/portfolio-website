@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1800 450"
+     preserveAspectRatio="xMidYMid meet">
+
+  <!-- Connected cursive signature -->
+  <text
+    x="80"
+    y="260"
+    font-family="'Allura','Great Vibes','Pacifico','Segoe Script',cursive"
+    font-size="220"
+    fill="white"
+    letter-spacing="-2">
+    Aniket Kumar Singh
+  </text>
+
+  <!-- Smooth underline -->
+  <path
+    d="M200 310 Q900 380 1600 300"
+    fill="none"
+    stroke="white"
+    stroke-width="14"
+    stroke-linecap="round"/>
+</svg>
