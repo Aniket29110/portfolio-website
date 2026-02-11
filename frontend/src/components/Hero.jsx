@@ -43,7 +43,7 @@ const Hero = () => {
             </a>
 
             <a
-              href="/resume.pdf"
+              href="Aniket Kumar.pdf"
               className="px-8 py-3 rounded-xl border border-gray-600 text-gray-300 hover:border-violet-400 hover:text-violet-400 transition"
             >
               Resume
