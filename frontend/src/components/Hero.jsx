@@ -1,27 +1,21 @@
 import { motion } from "framer-motion";
 import { personalInfo } from "../data/portfolioData";
+import profileImage from "../assets/profile.jpeg";
 
 const Hero = () => {
   return (
-     <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
-
-
-
-      {/* Background glow */}
+    <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-violet-600/30 rounded-full blur-3xl"></div>
       <div className="absolute -bottom-50 -right-50 w-96 h-96 bg-fuchsia-600/30 rounded-full blur-3xl"></div>
 
       <motion.div
-       initial={{ opacity: 0, y: 40 }}
-       animate={{ opacity: 1, y: 0 }}
-       transition={{ duration: 0.8, ease: "easeOut" }}
-       className="relative z-10 max-w-7xl mx-auto px-10 grid md:grid-cols-2 gap-16 items-center">
-
-        {/* LEFT TEXT */}
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+        className="relative z-10 max-w-7xl mx-auto px-10 grid md:grid-cols-2 gap-16 items-center"
+      >
         <div>
-          <p className="text-violet-400 mb-4 text-lg">
-            Hello! I'm {personalInfo.name}
-          </p>
+          <p className="text-violet-400 mb-4 text-lg">Hello! I'm {personalInfo.name}</p>
 
           <h1 className="text-5xl md:text-7xl font-extrabold leading-tight">
             A Developer who <br />
@@ -30,9 +24,7 @@ const Hero = () => {
             </span>
           </h1>
 
-          <p className="mt-6 text-gray-400 max-w-xl">
-            {personalInfo.description}
-          </p>
+          <p className="mt-6 text-gray-400 max-w-xl">{personalInfo.description}</p>
 
           <div className="mt-10 flex gap-6">
             <a
@@ -51,13 +43,15 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* RIGHT VISUAL */}
         <div className="flex justify-center">
-          <div className="w-80 h-80 rounded-3xl bg-linear-to-br from-violet-500/30 to-fuchsia-500/30 backdrop-blur-xl border border-white/10 flex items-center justify-center text-7xl shadow-2xl">
-            👨‍💻
+          <div className="w-76 h-76 sm:w-[21rem] sm:h-[21rem] rounded-full shadow-2xl overflow-hidden">
+            <img
+              src={profileImage}
+              alt={personalInfo.name}
+              className="h-full w-full rounded-full object-cover object-top"
+            />
           </div>
         </div>
-
       </motion.div>
     </section>
   );
