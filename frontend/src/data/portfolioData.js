@@ -16,7 +16,7 @@ export const skills = [
   "Node.js",
   "MongoDB",
   "SQL",
-  "Git",
+  // "Git",
 ];
 export const projects = [
   {

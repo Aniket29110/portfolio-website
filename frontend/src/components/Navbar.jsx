@@ -37,7 +37,7 @@ const Navbar = () => {
 
         {/* Logo */}
         <span className="text-xl font-bold text-violet-400">
-          Aniket Singh
+          Aniket Kumar Singh
         </span>
 
         {/* Desktop links */}
