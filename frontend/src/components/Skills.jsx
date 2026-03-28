@@ -1,76 +1,74 @@
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
+import { Database, Figma, Globe, Server, Wrench } from "lucide-react";
+import { skillCategories } from "../data/portfolioData";
+import SectionHeading from "./SectionHeading";
 
-import { skills } from "../data/portfolioData";
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: {
-    opacity: 0,
-    y: 30,
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-  },
+const iconMap = {
+  Frontend: Globe,
+  Backend: Server,
+  Database: Database,
+  Tools: Wrench,
+  Design: Figma,
 };
 
 const Skills = () => {
   return (
-    <motion.section
-      id="skills"
-      className="py-32 px-10"
-      variants={containerVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-    >
-      {/* Section Title */}
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true }}
-        className="text-4xl font-bold text-center mb-16"
-      >
-        Skills
-      </motion.h2>
+    <section id="skills" className="section-shell">
+      <div className="content-width space-y-12">
+        <SectionHeading
+          eyebrow="Skills"
+          title="A practical skill set shaped by projects and curiosity."
+          description="I focus on tools that help me design responsive interfaces, build functional applications, and keep improving as a developer."
+        />
 
-      {/* Skills Grid */}
-      <div className="max-w-5xl mx-auto grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-8">
-        {skills.map((skill) => (
-          <motion.div
-            key={skill}
-            variants={itemVariants}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="
-              bg-slate-900/60
-              backdrop-blur
-              border border-white/10
-              rounded-xl
-              py-4
-              text-center
-              text-violet-300
-              font-medium
-              cursor-default
-              hover:scale-110
-              hover:bg-violet-500/10
-              hover:shadow-[0_0_25px_rgba(139,92,246,0.4)]
-              transition
-            "
-          >
-            {skill}
-          </motion.div>
-        ))}
+        <div className="grid gap-6 xl:grid-cols-2">
+          {skillCategories.map((category, index) => {
+            const Icon = iconMap[category.title] || Wrench;
+
+            return (
+              <Motion.article
+                key={category.title}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.15 }}
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className="surface-card p-7 sm:p-8"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-cyan-400/20 via-violet-500/20 to-fuchsia-500/20 text-[var(--accent-strong)]">
+                    <Icon size={22} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-semibold text-[var(--text-primary)]">{category.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[var(--text-secondary)]">{category.description}</p>
+                  </div>
+                </div>
+
+                <div className="mt-8 space-y-5">
+                  {category.skills.map((skill) => (
+                    <div key={skill.name}>
+                      <div className="mb-2 flex items-center justify-between text-sm">
+                        <span className="font-medium text-[var(--text-primary)]">{skill.name}</span>
+                        <span className="text-[var(--text-muted)]">{skill.level}%</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-[var(--surface-subtle)]">
+                        <Motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${skill.level}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 0.8, ease: "easeOut" }}
+                          className="h-full rounded-full bg-linear-to-r from-cyan-400 via-violet-500 to-fuchsia-500"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Motion.article>
+            );
+          })}
+        </div>
       </div>
-    </motion.section>
+    </section>
   );
 };
 
