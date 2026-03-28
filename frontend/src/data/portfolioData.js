@@ -109,7 +109,7 @@ export const education = [
   {
     title: "Class 12",
     subtitle: "Completed",
-    institution: "Bihar School Examination Board, Patna",
+    institution: "Town High School, Mairwa Siwan BR",
     scoreLabel: "Percentage",
     score: "64.8%",
     timeline: "Completed",
@@ -119,7 +119,7 @@ export const education = [
   {
     title: "Class 10",
     subtitle: "Completed",
-    institution: "Central Board of Secondary Education, Delhi",
+    institution: "D.V.M Public School , Pakwaliya Dhala Kandhwara Siwan BR",
     scoreLabel: "Percentage",
     score: "46.8%",
     timeline: "Completed",
