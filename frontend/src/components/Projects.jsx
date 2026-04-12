@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion as Motion } from "framer-motion";
-import { ArrowUpRight, Filter, Github, Sparkles } from "lucide-react";
+import { ArrowUpRight, ChevronLeft, ChevronRight, Filter, Github, Sparkles } from "lucide-react";
 import { projectFilters, projects } from "../data/portfolioData";
 import SectionHeading from "./SectionHeading";
 
@@ -210,11 +210,40 @@ const ProjectPreviewFrame = ({ project }) => {
 
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const filteredProjects = useMemo(() => {
     if (activeFilter === "All") return projects;
     return projects.filter((project) => project.category === activeFilter);
   }, [activeFilter]);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [activeFilter, filteredProjects.length]);
+
+  const slideWidthPercent = 100; // show one project at a time
+  const slideGapRem = 0;
+  const swipeThreshold = 60; // px
+
+  const handlePrev = () => {
+    if (!filteredProjects.length) return;
+    setCurrentIndex((prev) => (prev - 1 + filteredProjects.length) % filteredProjects.length);
+  };
+
+  const handleNext = () => {
+    if (!filteredProjects.length) return;
+    setCurrentIndex((prev) => (prev + 1) % filteredProjects.length);
+  };
+
+  const currentProject = filteredProjects[currentIndex] ?? null;
+  const handleDragEnd = (_event, info) => {
+    if (Math.abs(info.offset.x) < swipeThreshold) return;
+    if (info.offset.x < 0) {
+      handleNext();
+    } else {
+      handlePrev();
+    }
+  };
 
   return (
     <section id="projects" className="section-shell">
@@ -245,157 +274,204 @@ const Projects = () => {
           </div>
         </div>
 
-        <div className="grid gap-8">
-          {filteredProjects.map((project, index) => (
-            <Motion.article
-              key={project.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.55, delay: index * 0.08 }}
-              className="founder-panel overflow-hidden p-0"
-            >
-              <div className="grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
-                <div className="relative overflow-hidden border-b border-[var(--border-color)] p-6 lg:border-b-0 lg:border-r lg:p-8">
-                  <div className={`absolute inset-0 bg-linear-to-br ${project.preview.accent} opacity-10`} />
-                  <div className="relative">
-                    <div className="mb-5 flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--accent-strong)]">
-                          {project.preview.eyebrow}
-                        </p>
-                        <h3 className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
-                          {project.preview.title}
-                        </h3>
-                      </div>
-                      <div className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--text-secondary)]">
-                        {project.featuredLabel}
-                      </div>
-                    </div>
+        {currentProject && (
+          <div className="relative rounded-[2rem] border border-[var(--border-color)] bg-[var(--surface-strong)] p-2 shadow-[0_24px_60px_rgba(15,23,42,0.28)] max-w-screen-xl mx-auto">
+            <div className="absolute left-4 top-1/2 z-10 -translate-y-1/2">
+              <button
+                type="button"
+                onClick={handlePrev}
+                className="rounded-full border border-[var(--border-color)] bg-[var(--surface-strong)] p-2 text-[var(--text-primary)] shadow-lg transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
+                aria-label="Previous project"
+              >
+                <ChevronLeft size={18} />
+              </button>
+            </div>
 
-                    <ProjectPreviewFrame project={project} />
+            <div className="absolute right-4 top-1/2 z-10 -translate-y-1/2">
+              <button
+                type="button"
+                onClick={handleNext}
+                className="rounded-full border border-[var(--border-color)] bg-[var(--surface-strong)] p-2 text-[var(--text-primary)] shadow-lg transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
+                aria-label="Next project"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
 
-                    <p className="mt-10 max-w-xl text-sm leading-7 text-[var(--text-secondary)]">
-                      {project.preview.caption}
-                    </p>
-                  </div>
-                </div>
+            <div className="overflow-hidden rounded-[1.6rem] border border-[var(--border-color)] bg-[var(--surface-strong)] px-2 sm:px-3">
+              <Motion.div
+                className="flex items-stretch gap-0 px-0 py-6"
+                animate={{
+                  x: `calc(-${currentIndex * slideWidthPercent}% - ${currentIndex * slideGapRem}rem)`,
+                }}
+                transition={{ type: "spring", stiffness: 120, damping: 20 }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.12}
+                onDragEnd={handleDragEnd}
+                style={{ willChange: "transform", touchAction: "pan-y" }}
+              >
+                {filteredProjects.map((project) => (
+                  <Motion.article
+                    key={project.id}
+                    layout
+                    className="founder-panel overflow-hidden p-0 basis-full shrink-0"
+                  >
+                    <div className="grid h-full gap-0 lg:grid-cols-[0.9fr_1.1fr]">
+                      <div className="relative overflow-hidden border-b border-[var(--border-color)] p-6 lg:border-b-0 lg:border-r lg:p-8">
+                        <div className={`absolute inset-0 bg-linear-to-br ${project.preview.accent} opacity-10`} />
+                        <div className="relative">
+                          <div className="mb-5 flex items-center justify-between gap-3">
+                            <div>
+                              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--accent-strong)]">
+                                {project.preview.eyebrow}
+                              </p>
+                              <h3 className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
+                                {project.preview.title}
+                              </h3>
+                            </div>
+                            <div className="rounded-full border border-white/10 bg-black/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--text-secondary)]">
+                              {project.featuredLabel}
+                            </div>
+                          </div>
 
-                <div className="p-6 sm:p-8 lg:p-10">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="rounded-full border border-[var(--border-color)] bg-[var(--surface-subtle)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-[var(--accent-strong)]">
-                      {project.category}
-                    </span>
-                    <span className="text-sm text-[var(--text-muted)]">{project.tagline}</span>
-                  </div>
+                          <ProjectPreviewFrame project={project} />
 
-                  <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">{project.title}</h3>
-
-                  <div className="mt-6 grid gap-4 text-sm leading-7 text-[var(--text-secondary)]">
-                    <div>
-                      <p className="font-semibold text-[var(--text-primary)]">Problem</p>
-                      <p className="mt-1">{project.problem}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[var(--text-primary)]">Solution</p>
-                      <p className="mt-1">{project.solution}</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-[var(--text-primary)]">Why it matters</p>
-                      <p className="mt-1">{project.impact}</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 grid gap-3 md:grid-cols-3">
-                    {project.impactMetrics.map((item) => (
-                      <div
-                        key={item.label}
-                        className="rounded-[1.4rem] border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-4"
-                      >
-                        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--text-muted)]">
-                          {item.label}
-                        </p>
-                        <p className="mt-3 text-sm font-semibold leading-6 text-[var(--text-primary)]">
-                          {item.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-6 flex flex-wrap gap-3">
-                    {project.stack.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-[var(--border-color)] bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="mt-8 grid gap-3 sm:grid-cols-2">
-                    {project.features.map((feature) => (
-                      <div
-                        key={feature}
-                        className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-4 text-sm leading-6 text-[var(--text-secondary)] transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
-                      >
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-8 rounded-[1.75rem] border border-[var(--border-color)] bg-[var(--surface-subtle)] p-5">
-                    <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[var(--accent-strong)]">
-                      Real-World Impact
-                    </p>
-                    <div className="mt-4 grid gap-3">
-                      {project.outcomes.map((outcome) => (
-                        <div
-                          key={outcome}
-                          className="flex gap-3 rounded-2xl border border-[var(--border-color)] bg-[var(--surface-strong)] px-4 py-4 text-sm leading-6 text-[var(--text-secondary)]"
-                        >
-                          <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--accent-strong)]" />
-                          <span>{outcome}</span>
+                          <p className="mt-10 max-w-xl text-sm leading-7 text-[var(--text-secondary)]">
+                            {project.preview.caption}
+                          </p>
                         </div>
-                      ))}
-                    </div>
-                  </div>
+                      </div>
 
-                  <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <a
-                      href={project.github || "#"}
-                      target={project.github ? "_blank" : undefined}
-                      rel={project.github ? "noreferrer" : undefined}
-                      aria-disabled={!project.github}
-                      className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
-                        project.github
-                          ? "border border-[var(--border-color)] bg-[var(--surface-strong)] text-[var(--text-primary)] hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
-                          : "cursor-not-allowed border border-[var(--border-color)] bg-[var(--surface-subtle)] text-[var(--text-muted)]"
-                      }`}
-                    >
-                      <Github size={17} />
-                      {project.github ? "View GitHub" : "GitHub Coming Soon"}
-                    </a>
-                    <a
-                      href={project.live || "#"}
-                      target={project.live ? "_blank" : undefined}
-                      rel={project.live ? "noreferrer" : undefined}
-                      aria-disabled={!project.live}
-                      className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
-                        project.live
-                          ? "bg-linear-to-r from-[var(--accent-strong)] via-[var(--accent-secondary)] to-[var(--accent-secondary)] text-white hover:-translate-y-0.5"
-                          : "cursor-not-allowed border border-[var(--border-color)] bg-[var(--surface-subtle)] text-[var(--text-muted)]"
-                      }`}
-                    >
-                      <ArrowUpRight size={17} />
-                      {project.live ? "Live Demo" : "Demo Unavailable"}
-                    </a>
-                  </div>
-                </div>
+                      <div className="p-6 sm:p-8 lg:p-10">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="rounded-full border border-[var(--border-color)] bg-[var(--surface-subtle)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-[var(--accent-strong)]">
+                            {project.category}
+                          </span>
+                          <span className="text-sm text-[var(--text-muted)]">{project.tagline}</span>
+                        </div>
+
+                        <h3 className="mt-5 text-3xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
+                          {project.title}
+                        </h3>
+
+                        {/* Problem/Solution/Impact removed per request */}
+
+                        <div className="mt-8 grid gap-3 md:grid-cols-3">
+                          {project.impactMetrics.map((item) => (
+                            <div
+                              key={item.label}
+                              className="rounded-[1.4rem] border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-4"
+                            >
+                              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[var(--text-muted)]">
+                                {item.label}
+                              </p>
+                              <p className="mt-3 text-sm font-semibold leading-6 text-[var(--text-primary)]">{item.value}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-6 flex flex-wrap gap-3">
+                          {project.stack.map((item) => (
+                            <span
+                              key={item}
+                              className="rounded-full border border-[var(--border-color)] bg-[var(--surface-subtle)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                          {project.features.map((feature) => (
+                            <div
+                              key={feature}
+                              className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-4 text-sm leading-6 text-[var(--text-secondary)] transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
+                            >
+                              {feature}
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="mt-8 rounded-[1.75rem] border border-[var(--border-color)] bg-[var(--surface-subtle)] p-5">
+                          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-[var(--accent-strong)]">
+                            Real-World Impact
+                          </p>
+                      <div className="mt-4 grid gap-3">
+                        {project.outcomes.map((outcome) => {
+                          const shortText = outcome.length > 70 ? `${outcome.slice(0, 70)}…` : outcome;
+                          return (
+                            <div
+                              key={outcome}
+                              className="flex gap-3 rounded-2xl border border-[var(--border-color)] bg-[var(--surface-strong)] px-4 py-3 text-sm leading-6 text-[var(--text-secondary)]"
+                            >
+                              <span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--accent-strong)]" />
+                              <span className="line-clamp-2">{shortText}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                          <a
+                            href={project.github || "#"}
+                            target={project.github ? "_blank" : undefined}
+                            rel={project.github ? "noreferrer" : undefined}
+                            aria-disabled={!project.github}
+                            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
+                              project.github
+                                ? "border border-[var(--border-color)] bg-[var(--surface-strong)] text-[var(--text-primary)] hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
+                                : "cursor-not-allowed border border-[var(--border-color)] bg-[var(--surface-subtle)] text-[var(--text-muted)]"
+                            }`}
+                          >
+                            <Github size={17} />
+                            {project.github ? "View GitHub" : "GitHub Coming Soon"}
+                          </a>
+                          <a
+                            href={project.live || "#"}
+                            target={project.live ? "_blank" : undefined}
+                            rel={project.live ? "noreferrer" : undefined}
+                            aria-disabled={!project.live}
+                            className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
+                              project.live
+                                ? "bg-linear-to-r from-[var(--accent-strong)] via-[var(--accent-secondary)] to-[var(--accent-secondary)] text-white hover:-translate-y-0.5"
+                                : "cursor-not-allowed border border-[var(--border-color)] bg-[var(--surface-subtle)] text-[var(--text-muted)]"
+                            }`}
+                          >
+                            <ArrowUpRight size={17} />
+                            {project.live ? "Live Demo" : "Demo Unavailable"}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </Motion.article>
+                ))}
+              </Motion.div>
+            </div>
+
+            <div className="mt-4 flex items-center justify-center gap-3 pb-2">
+              <div className="rounded-full border border-[var(--border-color)] bg-[var(--surface-subtle)] px-3 py-1 text-xs font-semibold text-[var(--text-secondary)]">
+                {currentIndex + 1} / {filteredProjects.length}
               </div>
-            </Motion.article>
-          ))}
-        </div>
+              <div className="flex gap-2">
+                {filteredProjects.map((project, idx) => (
+                  <button
+                    key={project.id}
+                    type="button"
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`h-2.5 w-2.5 rounded-full transition ${
+                      idx === currentIndex
+                        ? "bg-[var(--accent-strong)]"
+                        : "border border-[var(--border-color)] bg-[var(--surface-subtle)]"
+                    }`}
+                    aria-label={`Go to project ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

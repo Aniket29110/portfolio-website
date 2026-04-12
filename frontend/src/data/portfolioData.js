@@ -217,6 +217,135 @@ export const projects = [
     },
     featuredLabel: "Brand Experience",
   },
+  {
+    id: "cloth-couture",
+    title: "Cloth Couture",
+    category: "Web",
+    tagline: "A fashion e-commerce experience that emphasizes discovery, trust, and fast checkout for indie labels.",
+    problem:
+      "Most small fashion brands lose shoppers before checkout because their sites feel generic, slow, or unreliable—hurting conversion and brand perception.",
+    solution:
+      "I built a premium storefront with curated collections, persuasive product storytelling, and a streamlined cart flow so new visitors can browse, trust, and purchase quickly.",
+    impact:
+      "This project shows I can design and ship a revenue-focused UI: high visual polish, performance-conscious builds, and content that nudges buyers to finish the purchase.",
+    stack: ["React", "Tailwind CSS", "Redux Toolkit", "Stripe Checkout", "Node/Express"],
+    features: [
+      "Collection-first navigation with fast client-side filtering",
+      "Rich product pages with sizing, care, and lookbook sections",
+      "Persistent cart with Stripe-powered checkout and order states",
+      "CMS-friendly data model for adding drops without code changes",
+    ],
+    outcomes: [
+      "Demonstrates end-to-end commerce thinking from UX to payments.",
+      "Balances aesthetics with speed via code-splitting and image optimization.",
+      "Shows ability to ship reliable purchase flows that earn trust.",
+    ],
+    impactMetrics: [
+      { label: "Conversion Focus", value: "Checkout-first journeys" },
+      { label: "UX Signal", value: "Discovery + trust content" },
+      { label: "Commerce Stack", value: "Stripe + state management" },
+    ],
+    github: "https://github.com/Aniket291104/cloth-couture",
+    live: "https://cloth-couture-client.vercel.app",
+    preview: {
+      eyebrow: "E‑Commerce",
+      title: "Curated Lookbook Store",
+      caption: "Editorial product cards, confident branding, and frictionless cart/checkout.",
+      accent: "from-amber-400 via-rose-400 to-fuchsia-500",
+      theme: "commerce",
+      primaryMetric: "Fast checkout",
+      secondaryMetric: "Conversion lens",
+      secondaryValue: "Browse → Buy",
+      chartBars: [64, 92, 78, 85, 71, 88],
+    },
+    featuredLabel: "Revenue Journey",
+  },
+  {
+    id: "fixify",
+    title: "Fixify (Hackathon)",
+    category: "Web",
+    tagline: "Hackathon-built ops board that turns bug reports into triaged, owner-ready tasks within minutes.",
+    problem:
+      "In fast-moving teams, issues arrive scattered across chats and forms, leaving owners unclear and response times slow during hackathons or launches.",
+    solution:
+      "Fixify centralizes intake, auto-tags severity, assigns owners, and tracks SLA timers so teams can move from report to resolution without manual coordination.",
+    impact:
+      "Shows I can ship a working ops tool under time pressure: clear dashboards, real-time state, and guardrails that keep teams focused on the next fix.",
+    stack: ["React", "Vite", "Tailwind CSS", "Supabase", "Zod"],
+    features: [
+      "Unified intake form with schema validation and file evidence",
+      "Auto-prioritization by category and severity with color cues",
+      "Owner assignment and SLA countdowns on a kanban-style board",
+      "Live updates via Supabase channels for multi-user sessions",
+    ],
+    outcomes: [
+      "Captures the ability to design for operations, not just UI polish.",
+      "Demonstrates real-time collaboration patterns with minimal latency.",
+      "Built under hackathon constraints—shipping discipline plus scope control.",
+    ],
+    impactMetrics: [
+      { label: "Response Time", value: "Triage < 3 min" },
+      { label: "Team Clarity", value: "Owner + SLA on card" },
+      { label: "Shipping Signal", value: "Hackathon-ready build" },
+    ],
+    github: "https://github.com/vivekmaddy16/Zero2One_Vivek_Maddheshiya",
+    live: "https://zero2-one-vivek-maddheshiya.vercel.app",
+    preview: {
+      eyebrow: "Ops Board",
+      title: "Live Issue Triage",
+      caption: "Severity-aware kanban with timers, owners, and intake guardrails.",
+      accent: "from-cyan-400 via-sky-500 to-indigo-500",
+      theme: "operations",
+      primaryMetric: "Fast triage",
+      secondaryMetric: "State sync",
+      secondaryValue: "Real-time",
+      chartBars: [58, 74, 83, 69, 91, 77],
+    },
+    featuredLabel: "Hackathon Build",
+  },
+  {
+    id: "ai-disaster-prediction",
+    title: "AI Disaster Prediction",
+    category: "AI",
+    tagline: "Geospatial risk forecasting that scores regions for floods and cyclones to aid early response planning.",
+    problem:
+      "Disaster teams often work with delayed or siloed signals, making it hard to pre-position resources before floods or storms escalate.",
+    solution:
+      "Built a pipeline that ingests weather, satellite, and historical event data, then surfaces a regional risk score with explainable factors for planners.",
+    impact:
+      "Positions ML as an operational tool: interpretable outputs, actionable thresholds, and a UI tuned for rapid decision-making under pressure.",
+    stack: ["Python", "Pandas", "XGBoost", "GeoPandas", "Leaflet", "Flask"],
+    features: [
+      "Data cleaning + feature engineering for multi-source geospatial feeds",
+      "XGBoost risk scoring with SHAP-style factor visibility",
+      "Interactive map UI with zone heatmaps and alert thresholds",
+      "API endpoints for integrating alerts into external dashboards",
+    ],
+    outcomes: [
+      "Demonstrates applied AI that pairs accuracy with operational clarity.",
+      "Shows comfort with geospatial visualization and performant mapping.",
+      "Bridges ML outputs to planners via a simple, actionable interface.",
+    ],
+    impactMetrics: [
+      { label: "Lead Time", value: "Early warning lens" },
+      { label: "Interpretability", value: "Factor-level insights" },
+      { label: "Deployment", value: "API + web map" },
+    ],
+    github: "",
+    live: "",
+    preview: {
+      eyebrow: "AI Risk",
+      title: "Regional Threat Map",
+      caption: "Heatmapped risk scores with explainable factors for planners.",
+      accent: "from-emerald-400 via-cyan-400 to-blue-600",
+      theme: "analytics",
+      primaryMetric: "Risk index",
+      secondaryMetric: "Zones watched",
+      secondaryValue: "Multi-region",
+      chartBars: [72, 88, 66, 94, 77, 81],
+    },
+    featuredLabel: "Response Ready",
+  },
 ];
 
 export const contactInfo = [
