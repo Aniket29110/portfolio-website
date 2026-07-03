@@ -7,7 +7,7 @@ const ThemeToggle = ({ theme, onToggle }) => {
     <button
       type="button"
       onClick={onToggle}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border-color)] bg-[var(--surface-strong)] text-[var(--text-primary)] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-orange-100 bg-white text-[#111827] shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)] hover:bg-orange-50"
       aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
     >
       {isDark ? <SunMedium size={18} /> : <Moon size={18} />}

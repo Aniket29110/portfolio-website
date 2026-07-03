@@ -1,232 +1,195 @@
 import { useMemo, useState } from "react";
-import { motion as Motion } from "framer-motion";
-import { CheckCircle2, CircleAlert, Mail, Send, Sparkles } from "lucide-react";
-import { contactInfo } from "../data/portfolioData";
-import SectionHeading from "./SectionHeading";
+import { Send } from "lucide-react";
+import { contactInfo, personalInfo } from "../data/portfolioData";
 
 const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
 const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
 const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
-const RECEIVER_EMAIL = "aniket24086@gmail.com";
 
-const initialForm = {
-  name: "",
-  email: "",
-  message: "",
-};
+const ICONS = { Email: "✉️", GitHub: "🐙", LinkedIn: "💼" };
 
 const Contact = () => {
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [status, setStatus] = useState({ type: "", message: "" });
   const [errors, setErrors] = useState({});
   const [isSending, setIsSending] = useState(false);
 
-  const isEmailConfigured = useMemo(
+  const isConfigured = useMemo(
     () => Boolean(EMAILJS_SERVICE_ID && EMAILJS_TEMPLATE_ID && EMAILJS_PUBLIC_KEY),
     []
   );
 
   const validate = () => {
-    const nextErrors = {};
-
-    if (!form.name.trim()) nextErrors.name = "Please enter your name.";
-    if (!form.email.trim()) {
-      nextErrors.email = "Please enter your email.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      nextErrors.email = "Enter a valid email address.";
-    }
-
-    if (!form.message.trim()) {
-      nextErrors.message = "Please add a short message.";
-    } else if (form.message.trim().length < 20) {
-      nextErrors.message = "Message should be at least 20 characters.";
-    }
-
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
+    const e = {};
+    if (!form.name.trim()) e.name = "Please enter your name.";
+    if (!form.email.trim()) e.email = "Please enter your email.";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email.";
+    if (!form.message.trim()) e.message = "Please add a message.";
+    return e;
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setForm((current) => ({ ...current, [name]: value }));
-    setErrors((current) => ({ ...current, [name]: "" }));
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length) { setErrors(errs); return; }
+    setErrors({});
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setStatus({ type: "", message: "" });
-
-    if (!validate()) return;
-
-    if (!isEmailConfigured) {
-      setStatus({
-        type: "error",
-        message: "Email service is not configured yet. Add your EmailJS environment variables to enable the form.",
-      });
+    if (!isConfigured) {
+      setStatus({ type: "info", message: "EmailJS not configured yet. Please set up your .env file." });
       return;
     }
 
     setIsSending(true);
-
     try {
-      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          service_id: EMAILJS_SERVICE_ID,
-          template_id: EMAILJS_TEMPLATE_ID,
-          user_id: EMAILJS_PUBLIC_KEY,
-          template_params: {
-            to_email: RECEIVER_EMAIL,
-            from_name: form.name.trim(),
-            from_email: form.email.trim(),
-            reply_to: form.email.trim(),
-            message: form.message.trim(),
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const message = await response.text();
-        throw new Error(message || "Unable to send message right now.");
-      }
-
-      setForm(initialForm);
-      setStatus({
-        type: "success",
-        message: "Thanks for reaching out. Your message has been sent successfully.",
-      });
-    } catch (error) {
-      const message =
-        error.message?.includes("recipients address is empty")
-          ? "EmailJS template configuration is incomplete. Set the recipient email in EmailJS."
-          : error.message || "Unable to send your message right now. Please try again later.";
-
-      setStatus({ type: "error", message });
+      const emailjs = (await import("@emailjs/browser")).default;
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        { from_name: form.name, from_email: form.email, message: form.message, to_email: personalInfo.email },
+        EMAILJS_PUBLIC_KEY
+      );
+      setStatus({ type: "success", message: "Message sent! I'll get back to you soon." });
+      setForm({ name: "", email: "", message: "" });
+    } catch {
+      setStatus({ type: "error", message: "Something went wrong. Try emailing me directly." });
     } finally {
       setIsSending(false);
     }
   };
 
+  const handleChange = (e) => {
+    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    if (errors[e.target.name]) setErrors((er) => { const n = { ...er }; delete n[e.target.name]; return n; });
+  };
+
   return (
-    <section id="contact" className="section-shell pb-24">
-      <div className="content-width space-y-12">
-        <SectionHeading
-          eyebrow="Contact"
-          title="Let's talk about building useful software together."
-          description="If you are hiring, collaborating, or just want to discuss a project idea, feel free to reach out. I am especially interested in internship and entry-level opportunities."
-        />
+    <section id="contact" className="section contact">
+      <div className="container">
+        <div style={{ textAlign: "center" }}>
+          <span className="section-eyebrow">Get In Touch</span>
+          <h2 className="section-title" style={{ color: "#fff" }}>
+            Ready To Get <span style={{ color: "var(--yellow)" }}>Started?</span>
+          </h2>
+          <p className="section-desc" style={{ color: "rgba(255,255,255,0.55)", marginInline: "auto", marginTop: "0.75rem" }}>
+            You know about me, let's talk about you. Shoot a message and I'll respond within 24 hours.
+          </p>
+        </div>
 
-        <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-          <Motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5 }}
-            className="surface-card p-8"
-          >
-            <div className="flex items-center gap-3 text-[var(--accent-strong)]">
-              <Sparkles size={20} />
-              <p className="text-sm font-semibold uppercase tracking-[0.35em]">Reach Out</p>
-            </div>
+        <div className="contact-grid">
+          {/* Left: contact info */}
+          <div className="contact-info">
+            {contactInfo.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                target="_blank"
+                rel="noreferrer"
+                className="contact-item"
+              >
+                <span className="contact-item-icon">{ICONS[item.label] || "🔗"}</span>
+                <div>
+                  <div className="contact-item-label">{item.label}</div>
+                  <div className="contact-item-value">{item.value}</div>
+                </div>
+              </a>
+            ))}
 
-            <div className="mt-8 space-y-4">
-              {contactInfo.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  target={item.href.startsWith("http") ? "_blank" : undefined}
-                  rel={item.href.startsWith("http") ? "noreferrer" : undefined}
-                  className="block rounded-2xl border border-[var(--border-color)] bg-[var(--surface-subtle)] px-5 py-4 transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
-                >
-                  <p className="text-xs uppercase tracking-[0.25em] text-[var(--text-muted)]">{item.label}</p>
-                  <p className="mt-2 font-medium text-[var(--text-primary)]">{item.value}</p>
-                </a>
-              ))}
-            </div>
-
-            <div className="mt-8 rounded-3xl border border-[var(--border-color)] bg-[var(--surface-subtle)] p-5">
-              <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                <Mail size={18} />
-                <p className="font-semibold">Response-friendly portfolio</p>
-              </div>
-              <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)]">
-                The form includes validation, loading state feedback, and clear success or failure messaging to keep the experience professional.
+            {/* CTA blurb */}
+            <div
+              style={{
+                marginTop: "auto",
+                padding: "1.5rem",
+                background: "rgba(255,107,44,0.12)",
+                borderRadius: "var(--radius-lg)",
+                border: "1px solid rgba(255,107,44,0.2)",
+              }}
+            >
+              <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.65 }}>
+                🚀 Currently open to internships, freelance projects, and collaborative builds. Prefer fast-moving, product-minded teams.
               </p>
             </div>
-          </Motion.div>
+          </div>
 
-          <Motion.form
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5, delay: 0.08 }}
-            onSubmit={handleSubmit}
-            className="surface-card p-8"
-          >
-            <div className="grid gap-5">
-              <label className="grid gap-2">
-                <span className="text-sm font-medium text-[var(--text-primary)]">Your Name</span>
-                <input
-                  name="name"
-                  type="text"
-                  value={form.name}
-                  onChange={handleChange}
-                  placeholder="Enter your name"
-                  className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-3.5 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent-soft)]"
-                />
-                {errors.name ? <span className="text-sm text-rose-400">{errors.name}</span> : null}
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-sm font-medium text-[var(--text-primary)]">Email Address</span>
-                <input
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                  className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-3.5 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent-soft)]"
-                />
-                {errors.email ? <span className="text-sm text-rose-400">{errors.email}</span> : null}
-              </label>
-
-              <label className="grid gap-2">
-                <span className="text-sm font-medium text-[var(--text-primary)]">Message</span>
-                <textarea
-                  name="message"
-                  rows="6"
-                  value={form.message}
-                  onChange={handleChange}
-                  placeholder="Tell me about the opportunity, role, or project."
-                  className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-3.5 text-[var(--text-primary)] outline-none transition placeholder:text-[var(--text-muted)] focus:border-[var(--accent-soft)]"
-                />
-                {errors.message ? <span className="text-sm text-rose-400">{errors.message}</span> : null}
-              </label>
-
-              {status.message ? (
-                <div
-                  className={`flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm ${
-                    status.type === "success"
-                      ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
-                      : "border-rose-500/40 bg-rose-500/10 text-rose-300"
-                  }`}
-                >
-                  {status.type === "success" ? <CheckCircle2 size={18} /> : <CircleAlert size={18} />}
-                  <span>{status.message}</span>
-                </div>
-              ) : null}
-
-              <button
-                type="submit"
-                disabled={isSending}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-linear-to-r from-cyan-400 via-violet-500 to-fuchsia-500 px-6 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
-              >
-                <Send size={17} />
-                {isSending ? "Sending..." : "Send Message"}
-              </button>
+          {/* Right: form */}
+          <form className="contact-form" onSubmit={handleSubmit} noValidate>
+            <div className="form-field">
+              <label htmlFor="contact-name">Name</label>
+              <input
+                id="contact-name"
+                name="name"
+                type="text"
+                placeholder="Your name"
+                value={form.name}
+                onChange={handleChange}
+              />
+              {errors.name && (
+                <span style={{ fontSize: "0.78rem", color: "#f87171" }}>{errors.name}</span>
+              )}
             </div>
-          </Motion.form>
+
+            <div className="form-field">
+              <label htmlFor="contact-email">Email</label>
+              <input
+                id="contact-email"
+                name="email"
+                type="email"
+                placeholder="your@email.com"
+                value={form.email}
+                onChange={handleChange}
+              />
+              {errors.email && (
+                <span style={{ fontSize: "0.78rem", color: "#f87171" }}>{errors.email}</span>
+              )}
+            </div>
+
+            <div className="form-field">
+              <label htmlFor="contact-message">Message</label>
+              <textarea
+                id="contact-message"
+                name="message"
+                rows={5}
+                placeholder="Tell me about your project or idea..."
+                value={form.message}
+                onChange={handleChange}
+              />
+              {errors.message && (
+                <span style={{ fontSize: "0.78rem", color: "#f87171" }}>{errors.message}</span>
+              )}
+            </div>
+
+            {status.message && (
+              <div
+                style={{
+                  padding: "0.75rem 1rem",
+                  borderRadius: "var(--radius-md)",
+                  fontSize: "0.85rem",
+                  background:
+                    status.type === "success"
+                      ? "rgba(34,197,94,0.12)"
+                      : status.type === "error"
+                        ? "rgba(239,68,68,0.12)"
+                        : "rgba(255,255,255,0.08)",
+                  color:
+                    status.type === "success"
+                      ? "#4ade80"
+                      : status.type === "error"
+                        ? "#f87171"
+                        : "rgba(255,255,255,0.7)",
+                  border: `1px solid ${status.type === "success" ? "rgba(34,197,94,0.25)" : status.type === "error" ? "rgba(239,68,68,0.25)" : "rgba(255,255,255,0.1)"}`,
+                }}
+              >
+                {status.message}
+              </div>
+            )}
+
+            <button type="submit" className="form-submit" disabled={isSending}>
+              {isSending ? "Sending…" : (
+                <>
+                  Shoot Message <Send size={15} style={{ marginLeft: 6, display: "inline" }} />
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </div>
     </section>

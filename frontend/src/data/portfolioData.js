@@ -30,9 +30,8 @@ export const personalInfo = {
 
 export const navigationItems = [
   { id: "home", label: "Home" },
-  { id: "about", label: "About" },
-  { id: "education", label: "Education" },
-  { id: "skills", label: "Skills" },
+  { id: "services", label: "Services" },
+  { id: "about", label: "About Us" },
   { id: "projects", label: "Projects" },
   { id: "contact", label: "Contact" },
 ];

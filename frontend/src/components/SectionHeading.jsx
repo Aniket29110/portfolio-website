@@ -16,7 +16,7 @@ const SectionHeading = ({ eyebrow, title, description, align = "left" }) => {
           {eyebrow}
         </p>
       ) : null}
-      <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--text-primary)] sm:text-4xl md:text-5xl">
+      <h2 className="mt-4 text-3xl font-extrabold text-[var(--text-primary)] sm:text-4xl md:text-5xl">
         {title}
       </h2>
       {description ? (

@@ -1,89 +1,105 @@
-import { motion as Motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { aboutContent, personalInfo } from "../data/portfolioData";
-import SectionHeading from "./SectionHeading";
+import profileImage from "../assets/profile.jpeg";
+
+const useInView = (ref, cb) => {
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) cb(); },
+      { threshold: 0.15 }
+    );
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+};
 
 const About = () => {
-  return (
-    <section id="about" className="section-shell">
-      <div className="content-width space-y-12">
-        <SectionHeading
-          eyebrow="About"
-          title="I approach software like a builder, not just a student."
-          description={aboutContent.intro}
-        />
+  const leftRef = useRef(null);
+  const rightRef = useRef(null);
 
-        <div className="grid gap-6 lg:grid-cols-[1.25fr_0.95fr]">
-          <Motion.div
-            initial={{ opacity: 0, y: 28 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.55 }}
-            className="founder-panel p-8 sm:p-10"
-          >
-            <div className="mb-7 inline-flex items-center rounded-full border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[var(--accent-strong)]">
-              Product taste + execution
-            </div>
-            <div className="space-y-5 text-[15px] leading-8 text-[var(--text-secondary)] sm:text-base">
-              {aboutContent.paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
+  useInView(leftRef, () => {
+    leftRef.current?.classList.add("animate-in");
+  });
+  useInView(rightRef, () => {
+    rightRef.current?.classList.add("animate-in", "delay-2");
+  });
+
+  return (
+    <section id="about" className="section" style={{ background: "#fff" }}>
+      <div className="container">
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <span className="section-eyebrow">About Me</span>
+          <h2 className="section-title">
+            Clients Get Always<br />
+            <span>Exceptional Works</span> From Me
+          </h2>
+          <p className="section-desc" style={{ marginInline: "auto", marginTop: "0.75rem" }}>
+            {aboutContent.intro}
+          </p>
+        </div>
+
+        <div className="about-split">
+          {/* Left: text */}
+          <div ref={leftRef} style={{ opacity: 0 }}>
+            <div style={{ display: "flex", gap: "2rem", marginBottom: "2rem", flexWrap: "wrap" }}>
+              {[
+                { num: "5+", label: "Projects Completed" },
+                { num: "3+", label: "Tech Stacks Mastered" },
+                { num: "24h", label: "Active & Available" },
+                { num: "100%", label: "Commitment" },
+              ].map((s) => (
+                <div key={s.label} className="stat-box" style={{ flex: "1 1 120px" }}>
+                  <div className="stat-num">{s.num}</div>
+                  <div className="stat-label">{s.label}</div>
+                </div>
               ))}
             </div>
-          </Motion.div>
 
-          <div className="grid gap-6">
-            <Motion.div
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.55, delay: 0.08 }}
-              className="founder-panel p-8"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--accent-strong)]">
-                Snapshot
-              </p>
-              <div className="mt-6 space-y-4">
-                <div>
-                  <p className="text-sm text-[var(--text-muted)]">Role</p>
-                  <p className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
-                    {personalInfo.role}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-[var(--text-muted)]">Location</p>
-                  <p className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
-                    {personalInfo.location}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-[var(--text-muted)]">Availability</p>
-                  <p className="mt-1 text-lg font-semibold text-[var(--text-primary)]">
-                    {personalInfo.availability}
-                  </p>
-                </div>
-              </div>
-            </Motion.div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", marginBottom: "1.75rem" }}>
+              {aboutContent.paragraphs.map((para) => (
+                <p key={para} style={{ fontSize: "0.93rem", lineHeight: 1.75, color: "var(--text-mid)" }}>
+                  {para}
+                </p>
+              ))}
+            </div>
 
-            <Motion.div
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.55, delay: 0.16 }}
-              className="founder-panel p-8"
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[var(--accent-strong)]">
-                What I Bring
-              </p>
-              <div className="mt-6 space-y-3">
-                {aboutContent.highlights.map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl border border-[var(--border-color)] bg-[var(--surface-subtle)] px-4 py-3 text-sm text-[var(--text-secondary)] transition hover:-translate-y-0.5 hover:border-[var(--accent-soft)]"
-                  >
-                    {item}
-                  </div>
-                ))}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginBottom: "2rem" }}>
+              {aboutContent.highlights.map((h) => (
+                <div
+                  key={h}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.6rem",
+                    fontSize: "0.88rem",
+                    color: "var(--text-mid)",
+                  }}
+                >
+                  <span style={{ color: "var(--orange)", fontWeight: 700 }}>✓</span> {h}
+                </div>
+              ))}
+            </div>
+
+            <a href="#contact" className="btn-primary">
+              Let's Talk →
+            </a>
+          </div>
+
+          {/* Right: photo card */}
+          <div ref={rightRef} style={{ opacity: 0 }} className="about-image-wrap">
+            <div className="about-card">
+              <img src={profileImage} alt={personalInfo.name} />
+
+              <div
+                className="about-floating-card"
+                style={{ animation: "floatUpDown 3s ease-in-out infinite" }}
+              >
+                <div className="afc-label">24 Hours Active</div>
+                <div className="afc-value">24h</div>
+                <div className="afc-sub">Online & ready to help</div>
               </div>
-            </Motion.div>
+            </div>
           </div>
         </div>
       </div>
