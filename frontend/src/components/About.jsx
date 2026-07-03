@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { aboutContent, personalInfo } from "../data/portfolioData";
-import profileImage from "../assets/profile.jpeg";
+import profileImage from "../assets/profile.png";
 
 const useInView = (ref, cb) => {
   useEffect(() => {

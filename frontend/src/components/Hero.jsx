@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Download, Award, Layers } from "lucide-react";
 import { personalInfo } from "../data/portfolioData";
-import profileImage from "../assets/profile.jpeg";
+import profileImage from "../assets/profile.png";
 
 const Hero = () => {
   const [typedText, setTypedText] = useState("");
