@@ -27,7 +27,7 @@ const Navbar = () => {
     <>
       <header className={`navbar${scrolled ? " scrolled" : ""}`}>
         <a href="#home" className="nav-logo" onClick={() => setOpen(false)}>
-          Mr<span>.</span>studio
+          Mr<span>.</span>Aniket Kumar
         </a>
 
         <nav>
