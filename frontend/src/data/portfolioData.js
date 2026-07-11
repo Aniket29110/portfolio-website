@@ -100,7 +100,7 @@ export const education = [
     subtitle: "Currently pursuing",
     institution: "Babu Banarasi Das University, Lucknow",
     scoreLabel: "CGPA",
-    score: "6.89 / 10",
+    score: "7.09 / 10 (till 6 sem)",
     timeline: "Present",
     details:
       "Developing a solid foundation in programming, data structures, software development, and project-based learning.",
@@ -158,7 +158,7 @@ export const projects = [
       { label: "User Lens", value: "Simple for non-technical staff" },
       { label: "Business Angle", value: "Supports retention strategy" },
     ],
-    github: "",
+    github: "https://github.com/Aniket291104/student_dropout-prediction",
     live: "",
     preview: {
       eyebrow: "Machine Learning",
@@ -330,7 +330,7 @@ export const projects = [
       { label: "Interpretability", value: "Factor-level insights" },
       { label: "Deployment", value: "API + web map" },
     ],
-    github: "",
+    github: "https://github.com/Aniket291104/Ai-based-disaster-predict",
     live: "",
     preview: {
       eyebrow: "AI Risk",

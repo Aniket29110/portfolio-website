@@ -47,10 +47,6 @@ const Hero = () => {
         <div className="hero-inner">
           {/* ── Left: text content ── */}
           <div className="hero-content animate-in">
-            <div className="hero-badge">
-              <span className="dot" />
-              {personalInfo.availability}
-            </div>
 
             <h1 className="hero-greeting">
               Hy! I Am<br />
