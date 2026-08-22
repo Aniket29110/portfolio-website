@@ -1,104 +1,218 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView, useScroll, useTransform } from "framer-motion";
 import { aboutContent, personalInfo } from "../data/portfolioData";
 import profileImage from "../assets/profile.png";
 
-const useInView = (ref, cb) => {
+// ─── Count-up number animation ───────────────────────────────────
+const CountUp = ({ target, suffix = "", duration = 1.5 }) => {
+  const [value, setValue] = useState(0);
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const started = useRef(false);
+
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) cb(); },
-      { threshold: 0.15 }
-    );
-    if (ref.current) obs.observe(ref.current);
-    return () => obs.disconnect();
-  }, []);
-};
+    if (!isInView || started.current) return;
+    started.current = true;
+    const startTime = performance.now();
+    const isFloat = String(target).includes(".");
+    const numericTarget = parseFloat(target);
 
-const About = () => {
-  const leftRef = useRef(null);
-  const rightRef = useRef(null);
-
-  useInView(leftRef, () => {
-    leftRef.current?.classList.add("animate-in");
-  });
-  useInView(rightRef, () => {
-    rightRef.current?.classList.add("animate-in", "delay-2");
-  });
+    const animate = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / (duration * 1000), 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = eased * numericTarget;
+      setValue(isFloat ? parseFloat(current.toFixed(1)) : Math.floor(current));
+      if (progress < 1) requestAnimationFrame(animate);
+      else setValue(numericTarget);
+    };
+    requestAnimationFrame(animate);
+  }, [isInView]);
 
   return (
-    <section id="about" className="section" style={{ background: "#fff" }}>
+    <span ref={ref}>
+      {value}{suffix}
+    </span>
+  );
+};
+
+// ─── About ───────────────────────────────────────────────────────
+const About = () => {
+  const imgRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: imgRef,
+    offset: ["start end", "end start"],
+  });
+  const imgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+
+  const stats = [
+    { num: 5, suffix: "+", label: "Projects Shipped" },
+    { num: 3, suffix: "+", label: "Tech Stacks" },
+    { num: 100, suffix: "%", label: "Commitment" },
+    { num: 24, suffix: "h", label: "Active & Available" },
+  ];
+
+  const skills = [
+    "React", "Node.js", "Python", "Flask",
+    "MongoDB", "Tailwind CSS", "Git", "Vite", "Supabase", "REST APIs",
+  ];
+
+  const leftRef = useRef(null);
+  const leftInView = useInView(leftRef, { once: true, margin: "-10% 0px" });
+
+  const container = {
+    hidden: {},
+    visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } },
+  };
+  const paraVariant = {
+    hidden: { clipPath: "inset(0 0 100% 0)", opacity: 0 },
+    visible: {
+      clipPath: "inset(0 0 0% 0)",
+      opacity: 1,
+      transition: { duration: 0.6, ease: [0.215, 0.61, 0.355, 1] },
+    },
+  };
+  const pillVariant = {
+    hidden: { opacity: 0, x: -20 },
+    visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease: "easeOut" } },
+  };
+
+  return (
+    <section id="about" className="section about-section">
       <div className="container">
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-          <span className="section-eyebrow">About Me</span>
-          <h2 className="section-title">
-            Clients Get Always<br />
-            <span>Exceptional Works</span> From Me
-          </h2>
-          <p className="section-desc" style={{ marginInline: "auto", marginTop: "0.75rem" }}>
-            {aboutContent.intro}
-          </p>
-        </div>
+        {/* Section label */}
+        <motion.div
+          className="section-label"
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          01 / About
+        </motion.div>
 
         <div className="about-split">
-          {/* Left: text */}
-          <div ref={leftRef} style={{ opacity: 0 }}>
-            <div style={{ display: "flex", gap: "2rem", marginBottom: "2rem", flexWrap: "wrap" }}>
-              {[
-                { num: "5+", label: "Projects Completed" },
-                { num: "3+", label: "Tech Stacks Mastered" },
-                { num: "24h", label: "Active & Available" },
-                { num: "100%", label: "Commitment" },
-              ].map((s) => (
-                <div key={s.label} className="stat-box" style={{ flex: "1 1 120px" }}>
-                  <div className="stat-num">{s.num}</div>
-                  <div className="stat-label">{s.label}</div>
-                </div>
-              ))}
-            </div>
+          {/* ── Left: text ── */}
+          <motion.div
+            ref={leftRef}
+            variants={container}
+            initial="hidden"
+            animate={leftInView ? "visible" : "hidden"}
+            className="about-text-col"
+          >
+            <h2 className="about-heading">
+              Building with speed,<br />
+              <span>precision & product taste.</span>
+            </h2>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem", marginBottom: "1.75rem" }}>
-              {aboutContent.paragraphs.map((para) => (
-                <p key={para} style={{ fontSize: "0.93rem", lineHeight: 1.75, color: "var(--text-mid)" }}>
+            {/* Paragraphs with clip-path reveal */}
+            <div className="about-paragraphs">
+              {aboutContent.paragraphs.map((para, i) => (
+                <motion.p key={i} variants={paraVariant} className="about-para">
                   {para}
-                </p>
+                </motion.p>
               ))}
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem", marginBottom: "2rem" }}>
-              {aboutContent.highlights.map((h) => (
-                <div
-                  key={h}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.6rem",
-                    fontSize: "0.88rem",
-                    color: "var(--text-mid)",
-                  }}
+            {/* Stats row */}
+            <div className="stats-row">
+              {stats.map((s, i) => (
+                <motion.div
+                  key={s.label}
+                  className="stat-item"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + i * 0.1 }}
                 >
-                  <span style={{ color: "var(--orange)", fontWeight: 700 }}>✓</span> {h}
-                </div>
+                  <div className="stat-number">
+                    <CountUp target={s.num} suffix={s.suffix} />
+                  </div>
+                  <div className="stat-label">{s.label}</div>
+                </motion.div>
               ))}
             </div>
 
-            <a href="#contact" className="btn-primary">
+            {/* Skill pills */}
+            <motion.div
+              className="skill-pills"
+              variants={container}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {skills.map((skill) => (
+                <motion.span key={skill} className="skill-pill" variants={pillVariant}>
+                  {skill}
+                </motion.span>
+              ))}
+            </motion.div>
+
+            {/* Highlights */}
+            <div className="about-highlights">
+              {aboutContent.highlights.map((h, i) => (
+                <motion.div
+                  key={i}
+                  className="highlight-item"
+                  initial={{ opacity: 0, x: -15 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 + i * 0.1 }}
+                >
+                  <span className="highlight-check">✓</span>
+                  {h}
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.a
+              href="#contact"
+              className="btn-primary"
+              whileHover={{ scale: 1.05, boxShadow: "0 8px 30px rgba(255,107,44,0.4)" }}
+              whileTap={{ scale: 0.97 }}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+            >
               Let's Talk →
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
 
-          {/* Right: photo card */}
-          <div ref={rightRef} style={{ opacity: 0 }} className="about-image-wrap">
+          {/* ── Right: photo ── */}
+          <div ref={imgRef} className="about-photo-col">
             <div className="about-card">
-              <img src={profileImage} alt={personalInfo.name} />
+              {/* Corner border draws in on scroll */}
+              <motion.div
+                className="about-corner-border"
+                initial={{ pathLength: 0 }}
+                whileInView={{ pathLength: 1 }}
+                viewport={{ once: true }}
+              />
 
-              <div
-                className="about-floating-card"
-                style={{ animation: "floatUpDown 3s ease-in-out infinite" }}
+              {/* Parallax image */}
+              <motion.div
+                style={{ y: imgY, willChange: "transform" }}
+                className="about-img-wrap"
               >
-                <div className="afc-label">24 Hours Active</div>
-                <div className="afc-value">24h</div>
-                <div className="afc-sub">Online & ready to help</div>
-              </div>
+                <img src={profileImage} alt={personalInfo.name} className="about-img" />
+              </motion.div>
+
+              {/* Floating card */}
+              <motion.div
+                className="about-floating-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                animate={{ y: [0, -8, 0] }}
+              >
+                <div className="afc-icon">🚀</div>
+                <div>
+                  <div className="afc-label">Open to Work</div>
+                  <div className="afc-value">Internships 2025</div>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>

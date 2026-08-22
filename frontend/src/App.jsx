@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
@@ -10,20 +10,34 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
 import ScrollProgress from "./components/ScrollProgress";
+import CustomCursor from "./components/ui/CustomCursor";
+import { useLenis } from "./hooks/useLenis";
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setIsLoading(false), 1100);
-    return () => window.clearTimeout(timer);
-  }, []);
+  // Initialize Lenis smooth scroll globally
+  useLenis();
+
+  const handleLoaderComplete = () => {
+    setIsLoading(false);
+  };
 
   return (
     <>
-      <Loader isVisible={isLoading} />
+      {/* Custom cursor (desktop only — hides itself on touch devices) */}
+      <CustomCursor />
+
+      {/* Cinematic page loader */}
+      <Loader isVisible={isLoading} onComplete={handleLoaderComplete} />
+
+      {/* Scroll progress bar at top */}
       <ScrollProgress />
+
+      {/* Navbar */}
       <Navbar />
+
+      {/* Main content */}
       <main>
         <Hero />
         <Statement />
@@ -33,6 +47,7 @@ function App() {
         <Projects />
         <Contact />
       </main>
+
       <Footer />
     </>
   );
